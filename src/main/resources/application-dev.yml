@@ -1,0 +1,31 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /RoutePlanSystem
+
+mybatis:
+  mapper-locations: classpath*:sqlMapper/*.xml
+  configuration:
+    cache-enabled: true
+    call-setters-on-nulls: true
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:;MODE=MYSQL;
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+    data: classpath:h2/data_prepare.sql
+    schema: classpath:h2/schema.sql
+    sql-script-encoding: utf-8
+  mail:
+    host: smtp.qq.com
+    username: campus.mis@foxmail.com
+    password: ewojbsakezxzhejd
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true

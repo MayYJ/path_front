@@ -1,0 +1,55 @@
+server:
+  port: 8081
+  servlet:
+    context-path: /RoutePlanSystem
+
+mybatis:
+  mapper-locations: classpath*:sqlMapper/*.xml
+  configuration:
+    cache-enabled: true
+    call-setters-on-nulls: true
+
+spring:
+  datasource:
+    druid:
+      url: jdbc:mysql://localhost:3306/path?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true
+      driver-class-name: com.mysql.jdbc.Driver
+      username: root
+      password: 123456
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+      timeBetweenEvictionRunsMillis: 6000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 'x'
+      validation-query-timeout: 1
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      poolPreparedStatements: false
+      maxPoolPreparedStatementPerConnectionSize: 20
+      filter:
+        stat:
+          log-slow-sql: true
+          slow-sql-millis: 10000
+          enabled: true
+        wall:
+          enabled: true
+          db-type: mysql
+      filters: stat,wall,slf4j
+  mail:
+    host: smtp.qq.com
+    username: campus.mis@foxmail.com
+    password: ewojbsakezxzhejd
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+    port: 587
+
+
+

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.may.routeplansystem.dao.DemoNodeDao">
+    <resultMap id="demoNodeMap" type="com.may.routeplansystem.entity.po.DemoNode">
+        <id property="posId" column="pos_id" jdbcType="INTEGER" />
+        <result property="posX" column="pos_x" jdbcType="DOUBLE" />
+        <result property="posY" column="pos_y" jdbcType="DOUBLE" />
+        <result property="isCenter" column="is_center" jdbcType="INTEGER" />
+        <result property="userId" column="user_id" jdbcType="INTEGER" />
+        <result property="questionId" column="question_id" jdbcType="INTEGER" />
+    </resultMap>
+
+    <sql id="posMess">
+        pos_id,pos_x,pos_y,is_center,user_id,question_id
+    </sql>
+
+    <insert id="insertDemoNode" parameterType="com.may.routeplansystem.entity.po.DemoNode">
+        INSERT
+        INTO demo_node(pos_id,pos_x,pos_y,is_center,user_id,question_id)
+        VALUES (#{posId},#{posX},#{posY},#{isCenter},#{userId},#{questionId})
+    </insert>
+
+    <insert id="insertDemoNodesList" parameterType="java.util.List">
+        INSERT 
+        INTO demo_node(pos_id,pos_x,pos_y,is_center,user_id,question_id)
+        VALUES 
+        <foreach collection="list" item="demoNode" index="index" open="" close="" separator=",">
+            (#{demoNode.posId},#{demoNode.posX},#{demoNode.posY},#{demoNode.isCenter},#{demoNode.userId},#{demoNode.questionId})
+        </foreach>
+    </insert>
+    
+    <!--删除某个问题下的某个点-->
+    <delete id="deleteDemoNode">
+        DELETE
+        FROM demo_node
+        WHERE pos_id = #{posId} AND user_id = #{userId} AND question_id = #{questionId}
+    </delete>
+
+    <!--删除一个问题-->
+    <delete id="deleteDemoQuestion">
+        DELETE
+        FROM demo_node
+        WHERE user_id = #{userId} AND question_id = #{questionId}
+    </delete>
+
+    <update id="updateDemoNode">
+        UPDATE demo_node
+        SET pos_x = #{posX},pos_y = #{posY},is_center = #{isCenter}
+        WHERE pos_id = #{posId} AND user_id = #{userId}
+    </update>
+
+    <!--展示一个问题下的所有点-->
+    <select id="selectAllDemoNodes" resultMap="demoNodeMap">
+        SELECT <include refid="posMess" />
+        FROM demo_node
+        WHERE question_id = #{questionId} AND user_id = #{userId}
+    </select>
+
+    <!--得到一个问题下的所有服务点-->
+    <select id="selectAllServiceNodes" resultMap="demoNodeMap">
+        SELECT <include refid="posMess" />
+        FROM demo_node
+        WHERE question_id = #{questionId} AND user_id = #{userId} AND is_center = 0
+    </select>
+
+    <!--得到一个问题下的中心点-->
+    <select id="selectCenterNodes" resultMap="demoNodeMap">
+        SELECT <include refid="posMess" />
+        FROM demo_node
+        WHERE question_id = #{questionId} AND is_center = 1 AND user_id = #{userId}
+    </select>
+
+    <select id="selectMaxQuestionId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT MAX(question_id)
+        FROM demo_node
+        WHERE user_id = #{userId}
+    </select>
+
+</mapper>
+   

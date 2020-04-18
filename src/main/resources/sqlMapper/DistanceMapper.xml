@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.may.routeplansystem.dao.DistanceDao">
+    <resultMap id="distance" type="com.may.routeplansystem.entity.po.Distance">
+        <id column="distance_id" property="distanceId"/>
+        <result column="start_node_id" property="startNodeId"/>
+        <result column="end_node_id" property="endNodeId"/>
+        <result column="dis" property="dis"/>
+        <result column="time" property="time"/>
+        <result column="final_solution_id" property="finalSolutionId"/>
+    </resultMap>
+
+    <sql id="distance_columns">
+        distance_id,start_node_id,end_node_id,dis,time,question_id
+    </sql>
+
+    <insert id="insertDis" parameterType="com.may.routeplansystem.entity.po.Distance">
+        insert into distance(question_id,start_node_id,end_node_id,dis,time)
+        values (#{questionId},#{startNodeId},#{endNodeId},#{dis},#{time})
+    </insert>
+
+    <insert id="insertDistances" parameterType="java.util.List">
+        insert into distance(question_id,start_node_id,end_node_id)
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item.questionId},#{item.startNodeId},#{item.endNodeId}
+        </foreach>
+    </insert>
+
+    <delete id="removeDis" parameterType="java.lang.Integer">
+        delete from distance
+        where distance_id=#{distanceId}
+    </delete>
+
+    <delete id="removeDistanceByStartNodeIdAndEndNodeId" parameterType="com.may.routeplansystem.entity.po.Distance">
+        delete from distance
+        where start_node_id=#{startNodeId}
+        and end_node_id=#{endNodeId}
+    </delete>
+
+    <delete id="removeDistanceByQuestionId" parameterType="int" >
+        delete from distance
+        where question_id=#{questionId}
+    </delete>
+
+    <update id="updateDisAndTime">
+        update distance
+        set dis=#{dis},time=#{time}
+        where distance_id=#{distanceId}
+    </update>
+
+    <select id="findUpdateDistances" resultMap="distance">
+        select
+        <include refid="distance_columns"/>
+        from distance
+        where time=0 and dis=0 and question_id=#{questionId}
+    </select>
+
+    <select id="findDistanceByStartIdAndEndId" resultMap="distance">
+        select
+        <include refid="distance_columns"/>
+        from distance
+        where start_node_id =#{startId} and end_node_id=#{endId}
+    </select>
+
+    <select id="countNotGetDisDistance" parameterType="int" resultType="int">
+        select count(*)-count(dis)
+        from distance
+        where question_id=#{questionId};
+    </select>
+</mapper>

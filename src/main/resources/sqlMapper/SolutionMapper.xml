@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.may.routeplansystem.dao.SolutionDao">
+    <resultMap id="solution" type="com.may.routeplansystem.entity.po.Solution">
+        <id column="solution_id" property="solutionId"/>
+        <result column="question_id" property="questionId"/>
+        <result column="route" property="route"/>
+        <result column="total_dis" property="totalDis"/>
+        <result column="total_time" property="totalTime"/>
+        <result column="del_flag" property="delFlag"/>
+    </resultMap>
+
+    <sql id="solution_columns">
+        solution_id,route,total_dis,total_time,final_solution_id,del_flag
+    </sql>
+
+    <select id="findSolutions" parameterType="java.lang.Integer" resultMap="solution">
+        select
+        <include refid="solution_columns"/>
+        from solution
+        where final_solution_id=#{finalSolutionId}
+    </select>
+
+    <insert id="insertSolution" parameterType="com.may.routeplansystem.entity.po.Solution">
+        insert into solution(route, total_dis, total_time, final_solution_id)
+        values (#{route}, #{totalDis}, #{totalTime}, #{finalSolutionId})
+    </insert>
+
+    <delete id="deleteSolution" parameterType="java.lang.Integer">
+        delete from solution
+        where solution_id=#{solutionId}
+    </delete>
+
+    <delete id="deleteSolutionByFinalSolutionId" parameterType="int">
+        delete from solution
+        where final_solution_id = final_solution_id
+    </delete>
+
+</mapper>

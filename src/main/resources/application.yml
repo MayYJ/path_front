@@ -1,0 +1,16 @@
+spring:
+  profiles:
+    active: prod
+
+excel:
+  vehicle_check: vehicleExcelCheckOne
+  vehicle_read: vehicleExcelReadOne
+  node_check: nodeExcelCheckOne
+  node_read: nodeExcelReadOne
+
+swagger2:
+  enable: true
+
+logging:
+  level:
+    com.may.routePlanSystem: debug

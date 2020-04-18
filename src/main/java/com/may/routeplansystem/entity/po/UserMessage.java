@@ -1,0 +1,1 @@
+package com.may.routeplansystem.entity.po;import lombok.Data;import lombok.ToString;/** * @author:dengsiyuan * @Date:2018/9/24 12:21 */@Data@ToStringpublic class UserMessage {    private String userId;    private String userName;    private String password;    private String eMail;}
