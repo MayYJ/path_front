@@ -6,10 +6,10 @@
         <result column="question_name" property="questionName"/>
         <result column="user_id" property="userId"/>
         <result column="del_flag" property="delFlag"/>
-        <result column="process_state" property="processState"/>
         <result column="simple_executed" property="simpleExecuted"/>
         <result column="genetic_executed" property="geneticExecuted"/>
         <result column="new_genetic_executed" property="newGeneticExecuted"/>
+        <result column="process_state" property="processState"/>
     </resultMap>
 
     <sql id="question_columns">
@@ -78,5 +78,4 @@
         set new_genetic_executed=#{state}
         where question_id=#{questionId}
     </update>
-
 </mapper>

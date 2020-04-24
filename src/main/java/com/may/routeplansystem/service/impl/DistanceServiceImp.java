@@ -125,7 +125,7 @@ public class DistanceServiceImp implements DistanceService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteDistanceByQuestionId(int questionId) {
-        questionDao.updateQuestionProcessState(3, questionId);
+        questionDao.updateQuestionProcessState(2, questionId);
         distanceDao.removeDistanceByQuestionId(questionId);
     }
 

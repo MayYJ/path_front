@@ -79,9 +79,9 @@ public class GeneticAlgorithm extends Algorithm {
         List<NodePojo> centerNodes = nodeDao.selectCenterNode(questionId);
         List<NodePojo> serviceNodes = nodeDao.selectServiceNode(questionId);
         int minDistance;
-        /** 初始化的方案数*/
+        /* 初始化的方案数*/
         int solutionCount = 20;
-        int hybridMutationCount = 5;
+        int hybridMutationCount = 1000;
         int i = 0;
         List<RouteTemp> solutions = initializeRoute(solutionCount, serviceNodes, centerNodes);
         if (!solutions.isEmpty()) {

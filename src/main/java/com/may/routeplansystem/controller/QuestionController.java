@@ -2,6 +2,7 @@ package com.may.routeplansystem.controller;
 
 import com.may.routeplansystem.cache.Cache;
 import com.may.routeplansystem.constant.Response;
+import com.may.routeplansystem.dao.QuestionDao;
 import com.may.routeplansystem.entity.dto.ResponseEntity;
 import com.may.routeplansystem.entity.po.Question;
 import com.may.routeplansystem.service.QuestionService;
@@ -98,4 +99,12 @@ public class QuestionController {
         return new ResponseEntity<>(SUCCESS, Response.SUCCESSFUL, null);
     }
 
+    @Resource
+    private QuestionDao questionDao;
+
+    @GetMapping("test")
+    public ResponseEntity test() {
+        Question question = questionDao.findQuestionByQuestionId(8);
+        return new ResponseEntity<>(SUCCESS, Response.SUCCESSFUL, question);
+    }
 }
