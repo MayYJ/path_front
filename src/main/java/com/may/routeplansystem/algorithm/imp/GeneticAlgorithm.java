@@ -1,7 +1,6 @@
 package com.may.routeplansystem.algorithm.imp;
 
 import com.may.routeplansystem.algorithm.Algorithm;
-import com.may.routeplansystem.cache.Cache;
 import com.may.routeplansystem.constant.ProcessState;
 import com.may.routeplansystem.dao.*;
 import com.may.routeplansystem.entity.po.*;
@@ -11,13 +10,11 @@ import com.may.routeplansystem.exception.ProcessException;
 import com.may.routeplansystem.exception.StopException;
 import com.may.routeplansystem.util.RandomInt;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.lang.reflect.Parameter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -63,14 +60,14 @@ public class GeneticAlgorithm extends Algorithm {
     public void beforeExecute(int questionId) {
         Question question = questionDao.findQuestionByQuestionId(questionId);
         generalBeforeExecute(question, "遗传算法");
-        if (question.getGeneticExecuted() == ProcessState.PROCESSING_GENETIC) {
+        if (question.getGeneticExecuted() == ProcessState.ALGORITHM_IS_PROCESSING) {
             throw new ProcessException("正在执行遗传算法,不能重复执行");
 
         }
-        if (question.getGeneticExecuted() == ProcessState.COMPLETE_GENETIC) {
+        if (question.getGeneticExecuted() == ProcessState.ALGORITHM_COMPLETED) {
             throw new ProcessException("您已经执行过遗传算法了哟");
         }
-        questionDao.updateGeneticExecuted(ProcessState.PROCESSING_GENETIC, questionId);
+        questionDao.updateGeneticExecuted(questionId, ProcessState.ALGORITHM_IS_PROCESSING);
     }
 
     @Override
@@ -124,8 +121,8 @@ public class GeneticAlgorithm extends Algorithm {
     public void afterExecute(int questionId) {
         Question question = questionDao.findQuestionByQuestionId(questionId);
         UserMessage userMessage = userDao.userMessage(String.valueOf(question.getUserId()));
-        questionDao.updateGeneticExecuted(questionId, ProcessState.COMPLETE_GENETIC);
-//        generalAfterExecute(questionId,javaMailSender, userMessage.getEMail(), "遗传算法");
+        questionDao.updateGeneticExecuted(questionId, ProcessState.ALGORITHM_COMPLETED);
+        generalAfterExecute(questionId,javaMailSender, userMessage.getEMail(), "遗传算法");
     }
 
     private int createFinalSolutionAndInsert(int questionId, double totalDis) {
@@ -412,9 +409,6 @@ public class GeneticAlgorithm extends Algorithm {
         Question question = questionDao.findQuestionByQuestionId(questionId);
         if (question == null) {
             throw new ParameterException("没有该ID的问题");
-        }
-        if (question.getProcessState() != ProcessState.PROCESSING_GENETIC) {
-            throw new ProcessException("遗传算法还没有执行，不能停止");
         }
         stopMap.put(questionId, true);
     }

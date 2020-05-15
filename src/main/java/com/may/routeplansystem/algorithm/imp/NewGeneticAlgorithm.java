@@ -62,14 +62,14 @@ public class NewGeneticAlgorithm extends Algorithm {
     public void beforeExecute(int questionId) {
         Question question = questionDao.findQuestionByQuestionId(questionId);
         generalBeforeExecute(question, "优化版遗传算法");
-        if (question.getGeneticExecuted() == ProcessState.PROCESSING_NEW_GENETIC) {
+        if (question.getNewGeneticExecuted() == ProcessState.ALGORITHM_IS_PROCESSING) {
             throw new ProcessException("正在执行优化版遗传算法,不能重复执行");
 
         }
-        if (question.getGeneticExecuted() == ProcessState.COMPLETE_NEW_GENETIC) {
+        if (question.getNewGeneticExecuted() == ProcessState.ALGORITHM_COMPLETED) {
             throw new ProcessException("您已经执行过优化版遗传算法了哟");
         }
-        questionDao.updateGeneticExecuted(ProcessState.PROCESSING_NEW_GENETIC, questionId);
+        questionDao.updateNewGeneticExecuted(questionId, ProcessState.ALGORITHM_IS_PROCESSING);
     }
 
     /**
@@ -594,8 +594,8 @@ public class NewGeneticAlgorithm extends Algorithm {
     public void afterExecute(int questionId) {
         Question question = questionDao.findQuestionByQuestionId(questionId);
         UserMessage userMessage = userDao.userMessage(String.valueOf(question.getUserId()));
-        questionDao.updateGeneticExecuted(questionId, ProcessState.COMPLETE_NEW_GENETIC);
-//        generalAfterExecute(questionId,javaMailSender, userMessage.getEMail(), "优化版遗传算法");
+        questionDao.updateNewGeneticExecuted(questionId, ProcessState.ALGORITHM_COMPLETED);
+        generalAfterExecute(questionId,javaMailSender, userMessage.getEMail(), "优化版遗传算法");
     }
 
     private void insertDataBase(int questionId, List<Plan> finalPlans) {
@@ -655,9 +655,6 @@ public class NewGeneticAlgorithm extends Algorithm {
         Question question = questionDao.findQuestionByQuestionId(questionId);
         if (question == null) {
             throw new ParameterException("没有该ID的问题");
-        }
-        if (question.getProcessState() != ProcessState.PROCESSING_NEW_GENETIC) {
-            throw new ProcessException("遗传算法还没有执行，不能停止");
         }
         stopMap.put(questionId, true);
     }

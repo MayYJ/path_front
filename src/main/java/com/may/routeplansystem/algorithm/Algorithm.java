@@ -1,12 +1,14 @@
 package com.may.routeplansystem.algorithm;
 
 import com.may.routeplansystem.constant.ProcessState;
+import com.may.routeplansystem.dao.QuestionDao;
 import com.may.routeplansystem.entity.po.Question;
 import com.may.routeplansystem.exception.ProcessException;
 import com.may.routeplansystem.util.taskCommit.TaskCommit;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
+import javax.annotation.Resource;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import static com.may.routeplansystem.constant.Constant.NCPU;
@@ -15,6 +17,9 @@ import static com.may.routeplansystem.constant.Constant.NCPU;
  * @author 10587
  */
 public abstract class Algorithm implements AlgorithmExecutor {
+
+    @Resource
+    private QuestionDao questionDao;
 
     /**
      * 在执行算法之前执行的方法
@@ -34,6 +39,7 @@ public abstract class Algorithm implements AlgorithmExecutor {
      */
     protected abstract void afterExecute(int questionId);
 
+
     @Override
     public void execute(int questionId){
         System.out.println("开始要执行了");
@@ -47,15 +53,17 @@ public abstract class Algorithm implements AlgorithmExecutor {
 
     protected void generalBeforeExecute(Question question, String algorithmName) {
         int processState = question.getProcessState();
-        if (question.getProcessState() < ProcessState.COMPLETE_DISTANCE_PREPARE) {
+        if (processState < ProcessState.COMPLETE_DISTANCE_PREPARE) {
             throw new ProcessException("前面的数据还没有准备好");
         }
+        questionDao.updateQuestionProcessState(ProcessState.SOME_ALGORITHM_PROCESSING, question.getQuestionId());
     }
 
 
     protected void generalAfterExecute(int questionId, JavaMailSender mailSender,
                                        String userEmail, String algorithm) {
-        sendMail(userEmail, questionId, algorithm, mailSender);
+        questionDao.updateQuestionProcessState(ProcessState.COMPLETE_DISTANCE_PREPARE, questionId);
+//        sendMail(userEmail, questionId, algorithm, mailSender);
     }
 
     private void sendMail(String toMail, int questionId,

@@ -1,11 +1,16 @@
 package com.may.routeplansystem.service.impl;
 
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.may.routeplansystem.constant.ProcessState;
 import com.may.routeplansystem.dao.*;
-import com.may.routeplansystem.entity.po.*;
+import com.may.routeplansystem.entity.po.NodePojo;
+import com.may.routeplansystem.entity.po.Question;
+import com.may.routeplansystem.entity.po.VehicleMessage;
 import com.may.routeplansystem.exception.ParameterException;
 import com.may.routeplansystem.service.*;
 import com.may.routeplansystem.service.util.ServiceUtil;
+import com.may.routeplansystem.util.Tupple;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,8 +18,6 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.may.routeplansystem.constant.ProcessState.*;
 
 /**
  * @author 10587
@@ -66,9 +69,12 @@ public class QuestionServiceImp implements QuestionService {
     }
 
     @Override
-    public List<Question> getQuestions(int userId,Integer currentPage,Integer pageSize) {
+    public Tupple<List<Question>, Long> getQuestions(int userId, Integer currentPage, Integer pageSize) {
         PageHelper.startPage(currentPage,pageSize);
-        return questionDao.findQuestionsByUserId(userId);
+        List<Question> questions = questionDao.findQuestionsByUserId(userId);
+        PageInfo<Question> pageInfo = new PageInfo<>(questions);
+        long total = pageInfo.getTotal();
+        return new Tupple<>(questions, total);
     }
 
     @Override
@@ -110,46 +116,32 @@ public class QuestionServiceImp implements QuestionService {
     }
     @Override
     public Map<Integer, String> getExecutedAlgorithm(int questionId) {
-        return getProrocessMap(questionId, COMPLETE_GENETIC, COMPLETE_SIMPLW,COMPLETE_NEW_GENETIC);
+        return getAlgorithmStateMap(questionId, ProcessState.ALGORITHM_COMPLETED);
     }
 
     @Override
     public Map<Integer, String> getExecutingAlgorithm(int questionId) {
-        return getProrocessMap(questionId, PROCESSING_GENETIC, PROCESSING_SIMPLE,PROCESSING_NEW_GENETIC);
+        return getAlgorithmStateMap(questionId, ProcessState.ALGORITHM_IS_PROCESSING);
     }
 
     @Override
     public Map<Integer, String> getNotExecuteAlgorithm(int questionId) {
-        Question question = questionDao.findQuestionByQuestionId(questionId);
-        Map<Integer,String> map = new HashMap<>();
-        int generateState = question.getGeneticExecuted();
-        int simpleState = question.getSimpleExecuted();
-        int newGenerateState = question.getNewGeneticExecuted();
-        if (generateState == 0) {
-            map.put(2, "遗传算法");
-        }
-        if (simpleState == 0) {
-            map.put(1, "简单算法");
-        }
-        if (newGenerateState == 0) {
-            map.put(3, "优化算法");
-        }
-        return map;
+        return getAlgorithmStateMap(questionId, ProcessState.ALGORITHM_NOT_EXECUTE);
     }
 
-    public Map<Integer, String> getProrocessMap(int questionId, int state1, int state2,int state3) {
+    public Map<Integer, String> getAlgorithmStateMap(int questionId, int state) {
         Question question = questionDao.findQuestionByQuestionId(questionId);
         Map<Integer,String> map = new HashMap<>();
         int generateState = question.getGeneticExecuted();
         int simpleState = question.getSimpleExecuted();
         int newGenerateState = question.getNewGeneticExecuted();
-        if (generateState == state1) {
+        if (generateState == state) {
             map.put(2, "遗传算法");
         }
-        if (simpleState == state2) {
+        if (simpleState == state) {
             map.put(1, "简单算法");
         }
-        if (newGenerateState == state3) {
+        if (newGenerateState == state) {
             map.put(3, "优化算法");
         }
         return map;

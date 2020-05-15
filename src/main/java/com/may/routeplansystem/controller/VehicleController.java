@@ -10,6 +10,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.util.ResourceUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +23,11 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static com.may.routeplansystem.constant.ResponseStatu.SUCCESS;
@@ -78,5 +87,31 @@ public class VehicleController {
             (@RequestBody @NotNull(message = "vehicleIdList 不能为空") List<Integer> vehicleIdList) {
         vehicleService.deleteVehicleBatch(vehicleIdList);
         return new ResponseEntity<>(SUCCESS, Response.SUCCESSFUL, null);
+    }
+
+    @GetMapping("downloadVehicleFile")
+    public org.springframework.http.ResponseEntity<org.springframework.core.io.Resource> downloadNodeFile(HttpServletRequest request) {
+        org.springframework.core.io.Resource resource = null;
+        String contentType = null;
+        try {
+            URL classPath = ResourceUtils.getURL("classpath:");
+            Path filePath = Paths.get(classPath.toURI()).resolve("doc").resolve("vehicle-template.xlsx");
+            resource = new UrlResource(filePath.toUri());
+            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+            if (!resource.exists()) {
+                throw new RuntimeException("IO 异常");
+            }
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+            throw new RuntimeException("IO 异常");
+        }
+
+        if (contentType == null) {
+            contentType = "application/octet-stream";
+        }
+        return org.springframework.http.ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + resource.getFilename())
+                .body(resource);
     }
 }

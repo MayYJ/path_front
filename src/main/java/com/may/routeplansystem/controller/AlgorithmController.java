@@ -78,8 +78,8 @@ public class AlgorithmController {
         return new ResponseEntity<Map>(SUCCESS, Response.SUCCESSFUL, map);
     }
 
-    @GetMapping("getNotExecutingAlgorithm")
-    public ResponseEntity getNotExecutAlgorithm(int questionId) {
+    @GetMapping("getNotExecuteAlgorithm")
+    public ResponseEntity getNotExecuteAlgorithm(int questionId) {
         Map<Integer, String> map = questionService.getNotExecuteAlgorithm(questionId);
         return new ResponseEntity<Map>(SUCCESS, Response.SUCCESSFUL, map);
     }

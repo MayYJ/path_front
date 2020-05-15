@@ -77,11 +77,16 @@ public class GlobleExceptionHandler {
         return new ResponseEntity<>(0, e.getMessage(), null);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity IllegalArgumentException(IllegalArgumentException e) {
+        log.error(e.toString());
+        return new ResponseEntity<>(ResponseStatu.SERVER_EXCUTE_FAIL, "请检查Url 是否正确", null);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity vehicleTransferException(Exception e) {
         log.error(e.toString());
         return new ResponseEntity<>(ResponseStatu.SERVER_EXCUTE_FAIL, "服务器异常", null);
     }
-
 
 }

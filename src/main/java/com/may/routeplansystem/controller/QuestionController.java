@@ -3,9 +3,11 @@ package com.may.routeplansystem.controller;
 import com.may.routeplansystem.cache.Cache;
 import com.may.routeplansystem.constant.Response;
 import com.may.routeplansystem.dao.QuestionDao;
+import com.may.routeplansystem.entity.dto.PageResponseEntity;
 import com.may.routeplansystem.entity.dto.ResponseEntity;
 import com.may.routeplansystem.entity.po.Question;
 import com.may.routeplansystem.service.QuestionService;
+import com.may.routeplansystem.util.Tupple;
 import com.may.routeplansystem.util.validation.insertAndUpdateGroup.Insert;
 import com.may.routeplansystem.util.validation.insertAndUpdateGroup.Update;
 import io.swagger.annotations.*;
@@ -56,15 +58,15 @@ public class QuestionController {
             @ApiImplicitParam(name = "pageSize",dataType = "int",value = "当前页容量",required = true)
     })
 
-    public ResponseEntity<List<Question>> getQuestions
+    public PageResponseEntity<List<Question>> getQuestions
             (@NotNull(message = "userId不能为空") @RequestParam(value = "userId") Integer userId,
              Integer currentPage,Integer pageSize) {
         if (currentPage == null || pageSize == null){
             currentPage = 1;
             pageSize = 5;
         }
-        List<Question> questions = questionService.getQuestions(userId,currentPage,pageSize);
-        return new ResponseEntity<>(SUCCESS, Response.SUCCESSFUL, questions);
+        Tupple<List<Question>, Long> dataAndTotal = questionService.getQuestions(userId,currentPage,pageSize);
+        return new PageResponseEntity<>(dataAndTotal.getT(), dataAndTotal.getR(), SUCCESS, Response.SUCCESSFUL);
     }
 
     @Validated
@@ -104,7 +106,6 @@ public class QuestionController {
 
     @GetMapping("test")
     public ResponseEntity test() {
-        Question question = questionDao.findQuestionByQuestionId(8);
-        return new ResponseEntity<>(SUCCESS, Response.SUCCESSFUL, question);
+        return new ResponseEntity<>(SUCCESS, Response.SUCCESSFUL, questionDao.test());
     }
 }

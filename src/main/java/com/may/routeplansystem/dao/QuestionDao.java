@@ -33,4 +33,5 @@ public interface QuestionDao {
 
     boolean updateGeneticExecuted(@Param("questionId") int questionId, @Param("state") int state);
     boolean updateNewGeneticExecuted(@Param("questionId") int questionId, @Param("state") int state);
+    boolean test();
 }

@@ -73,8 +73,7 @@ public class VehicleServiceImpl implements VehicleService {
             throw new ParameterException("没有该Id的问题");
         }
         int processState = question.getProcessState();
-        if (processState == ProcessState.PROCESSING_SIMPLE
-        || processState == ProcessState.PROCESSING_GENETIC) {
+        if (processState == ProcessState.SOME_ALGORITHM_PROCESSING) {
             throw new ProcessException("算法正在执行，不能添加或者删除基本数据");
         }
         if (processState < ProcessState.LOAD_NODE) {

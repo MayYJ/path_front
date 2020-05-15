@@ -1,6 +1,8 @@
 package com.may.routeplansystem.service;
 
+import com.may.routeplansystem.entity.dto.PageResponseEntity;
 import com.may.routeplansystem.entity.po.Question;
+import com.may.routeplansystem.util.Tupple;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +22,7 @@ public interface QuestionService {
      * @param pageSize
      * @return
      */
-    List<Question> getQuestions(int userId,Integer currentPage,Integer pageSize);
+    Tupple<List<Question>, Long> getQuestions(int userId, Integer currentPage, Integer pageSize);
 
     /**
      * 删除问题

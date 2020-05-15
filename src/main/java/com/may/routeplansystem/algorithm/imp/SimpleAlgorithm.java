@@ -61,14 +61,14 @@ public class SimpleAlgorithm extends Algorithm {
     public void beforeExecute(int questionId) {
         Question question = questionDao.findQuestionByQuestionId(questionId);
         generalBeforeExecute(question, "随机算法");
-        if (question.getSimpleExecuted() == ProcessState.PROCESSING_SIMPLE) {
+        if (question.getSimpleExecuted() == ProcessState.ALGORITHM_IS_PROCESSING) {
             throw new ProcessException("正在执行随机算法,不能重复执行");
 
         }
-        if (question.getSimpleExecuted() == ProcessState.COMPLETE_SIMPLW) {
+        if (question.getSimpleExecuted() == ProcessState.ALGORITHM_COMPLETED) {
             throw new ProcessException("您已经执行过随机算法了哟");
         }
-        questionDao.updateSimpleExecuted(questionId, ProcessState.PROCESSING_SIMPLE);
+        questionDao.updateSimpleExecuted(questionId, ProcessState.ALGORITHM_IS_PROCESSING);
     }
 
 
@@ -98,8 +98,8 @@ public class SimpleAlgorithm extends Algorithm {
     public void afterExecute(int questionId) {
         Question question = questionDao.findQuestionByQuestionId(questionId);
         UserMessage userMessage = userDao.userMessage(String.valueOf(question.getUserId()));
-        questionDao.updateSimpleExecuted(questionId, ProcessState.COMPLETE_SIMPLW);
-//        generalAfterExecute(questionId,javaMailSender, userMessage.getEMail(), "遗传算法");
+        questionDao.updateSimpleExecuted(questionId, ProcessState.ALGORITHM_COMPLETED);
+        generalAfterExecute(questionId,javaMailSender, userMessage.getEMail(), "遗传算法");
     }
 
     /**
@@ -224,9 +224,6 @@ public class SimpleAlgorithm extends Algorithm {
         Question question = questionDao.findQuestionByQuestionId(questionId);
         if (question == null) {
             throw new ParameterException("没有该ID的问题");
-        }
-        if (question.getProcessState() == ProcessState.PROCESSING_GENETIC) {
-            throw new ProcessException("简单算法还没有执行，不能停止");
         }
         stopMap.put(questionId, true);
     }

@@ -5,9 +5,7 @@ server:
 
 mybatis:
   mapper-locations: classpath*:sqlMapper/*.xml
-  configuration:
-    cache-enabled: true
-    call-setters-on-nulls: true
+  config-location: classpath:mybatiesConfig.xml
 
 spring:
   datasource:

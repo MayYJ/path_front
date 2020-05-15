@@ -78,4 +78,8 @@
         set new_genetic_executed=#{state}
         where question_id=#{questionId}
     </update>
+
+    <select id="test" resultType="java.lang.Integer">
+        select process_state from question where question_id=7
+    </select>
 </mapper>
